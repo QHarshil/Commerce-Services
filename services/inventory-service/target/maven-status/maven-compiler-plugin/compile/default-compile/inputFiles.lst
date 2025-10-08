@@ -1,0 +1,14 @@
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\dto\InventoryResponse.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\config\CacheConfig.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\config\KafkaConfig.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\event\InventoryEvent.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\repository\InventoryRepository.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\event\InventoryEventPublisher.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\model\Product.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\config\WebConfig.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\dto\StockReservationRequest.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\InventoryServiceApplication.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\model\Inventory.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\service\InventoryService.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\controller\InventoryController.java
+C:\Users\slaye\OneDrive\Desktop\commerce-services\services\inventory-service\src\main\java\com\commerce\repository\ProductRepository.java

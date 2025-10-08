@@ -1,0 +1,188 @@
+version: "3.8"
+
+services:
+  # ---------- Database ----------
+  postgres:
+    image: postgres:15-alpine
+    container_name: commerce_postgres
+    environment:
+      POSTGRES_DB: commerce
+      POSTGRES_USER: commerce
+      POSTGRES_PASSWORD: commerce123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      # Wait until the DB is actually accepting connections
+      test: ["CMD-SHELL", "pg_isready -U commerce -d commerce -h 127.0.0.1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # ---------- Redis ----------
+  redis:
+    image: redis:7-alpine
+    container_name: commerce_redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # ---------- Kafka (broker) ----------
+  kafka:
+    image: apache/kafka:3.8.0
+    container_name: commerce_kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft single node config
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"   # other containers use 'kafka:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      # 22-char base64-like string; any constant is fine for local
+      KAFKA_CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qg"
+      # sensible single-broker defaults
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # ---------- Inventory Service (8081) ----------
+  inventory-service:
+    build:
+      context: ./services/inventory-service
+      dockerfile: Dockerfile
+    container_name: commerce_inventory
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/commerce
+      SPRING_DATASOURCE_USERNAME: commerce
+      SPRING_DATASOURCE_PASSWORD: commerce123
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      INVENTORY_EVENTS_ENABLED: "true" 
+    restart: on-failure
+
+  # ---------- Order Service (8082) ----------
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    container_name: commerce_order
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/commerce
+      SPRING_DATASOURCE_USERNAME: commerce
+      SPRING_DATASOURCE_PASSWORD: commerce123
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    restart: on-failure
+
+  # ---------- Payment Service (8083) ----------
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    container_name: commerce_payment
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8083:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/commerce
+      SPRING_DATASOURCE_USERNAME: commerce
+      SPRING_DATASOURCE_PASSWORD: commerce123
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    restart: on-failure
+
+  # ---------- Checkout Service (8084) ----------
+  checkout-service:
+    build:
+      context: ./services/checkout-service
+      dockerfile: Dockerfile
+    container_name: commerce_checkout
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      # inventory-service readiness is best-effort; we rely on retries + restart
+      inventory-service:
+        condition: service_started
+      order-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+    ports:
+      - "8084:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/commerce
+      SPRING_DATASOURCE_USERNAME: commerce
+      SPRING_DATASOURCE_PASSWORD: commerce123
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      INVENTORY_SERVICE_URL: http://inventory-service:8080
+      ORDER_SERVICE_URL: http://order-service:8080
+      PAYMENT_SERVICE_URL: http://payment-service:8080
+    restart: on-failure
+
+  # ---------- Frontend (Dashboard) ----------
+  frontend:
+    build:
+      context: ./frontend
+    container_name: commerce_frontend
+    depends_on:
+      - inventory-service
+      - order-service
+      - payment-service
+      - checkout-service
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  redis_data:
+  kafka_data:

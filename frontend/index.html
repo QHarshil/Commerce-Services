@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commerce Services - API Dashboard</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛒 Commerce Services</h1>
+            <p class="subtitle">High-Throughput E-commerce Microservices Backend</p>
+            <div class="performance-badges">
+                <span class="badge">p95 &lt; 300ms</span>
+                <span class="badge">p99 &lt; 800ms</span>
+                <span class="badge">SAGA Pattern</span>
+                <span class="badge">Event-Driven</span>
+            </div>
+        </header>
+
+        <div class="services-grid">
+            <!-- Inventory Service -->
+            <div class="service-card">
+                <h3>📦 Inventory Service</h3>
+                <p>High-performance inventory management with optimistic locking</p>
+                <div class="api-section">
+                    <h4>Sample Products</h4>
+                    <div id="products-list" class="products-grid">
+                        <div class="loading">Loading products...</div>
+                    </div>
+                    <button onclick="loadProducts()" class="btn btn-primary">Refresh Products</button>
+                </div>
+            </div>
+
+            <!-- Checkout Service -->
+            <div class="service-card">
+                <h3>🛍️ Checkout Service</h3>
+                <p>SAGA orchestration for distributed transactions</p>
+                <div class="api-section">
+                    <h4>Test Checkout</h4>
+                    <div class="checkout-form">
+                        <select id="product-select" class="form-control">
+                            <option value="">Select a product...</option>
+                        </select>
+                        <input type="number" id="quantity" placeholder="Quantity" value="1" min="1" class="form-control">
+                        <select id="payment-method" class="form-control">
+                            <option value="CREDIT_CARD">Credit Card</option>
+                            <option value="DEBIT_CARD">Debit Card</option>
+                            <option value="PAYPAL">PayPal</option>
+                        </select>
+                        <button onclick="processCheckout()" class="btn btn-success">Process Checkout</button>
+                    </div>
+                    <div id="checkout-result" class="result-section"></div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="service-card">
+                <h3>📊 System Status</h3>
+                <p>Real-time health monitoring</p>
+                <div class="api-section">
+                    <div id="health-status" class="health-grid">
+                        <div class="loading">Checking services...</div>
+                    </div>
+                    <button onclick="checkHealth()" class="btn btn-secondary">Refresh Status</button>
+                </div>
+            </div>
+
+            <!-- API Explorer -->
+            <div class="service-card">
+                <h3>🔧 API Explorer</h3>
+                <p>Test individual API endpoints</p>
+                <div class="api-section">
+                    <div class="api-explorer">
+                        <select id="api-endpoint" class="form-control">
+                            <option value="">Select an endpoint...</option>
+                            <option value="GET|/api/v1/inventory/products">GET Inventory</option>
+                            <option value="GET|/api/v1/inventory/value">GET Total Value</option>
+                            <option value="GET|/api/v1/inventory/low-stock">GET Low Stock</option>
+                            <option value="POST|/api/v1/checkout/process">POST Checkout</option>
+                        </select>
+                        <button onclick="testEndpoint()" class="btn btn-info">Test Endpoint</button>
+                        <div id="api-result" class="result-section"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="architecture-info">
+                <h3>🏗️ Architecture Highlights</h3>
+                <div class="tech-stack">
+                    <span class="tech">Java Spring Boot</span>
+                    <span class="tech">PostgreSQL</span>
+                    <span class="tech">Redis Cache</span>
+                    <span class="tech">Apache Kafka</span>
+                    <span class="tech">Docker</span>
+                    <span class="tech">Prometheus</span>
+                </div>
+                <div class="features">
+                    <div class="feature">✅ Optimistic Locking</div>
+                    <div class="feature">✅ Circuit Breakers</div>
+                    <div class="feature">✅ Event Sourcing</div>
+                    <div class="feature">✅ Idempotency</div>
+                    <div class="feature">✅ Zero Downtime</div>
+                    <div class="feature">✅ Auto Scaling</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="static/js/app.js"></script>
+</body>
+</html>

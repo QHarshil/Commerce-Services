@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: checkout-service
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  kafka:
+    producer:
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
+    consumer:
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+# Mock service URLs for testing
+INVENTORY_SERVICE_URL: http://localhost:8081
+ORDER_SERVICE_URL: http://localhost:8082
+PAYMENT_SERVICE_URL: http://localhost:8083
+
+logging:
+  level:
+    com.commerce: DEBUG

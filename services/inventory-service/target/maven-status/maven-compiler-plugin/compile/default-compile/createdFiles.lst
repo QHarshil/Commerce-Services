@@ -1,0 +1,15 @@
+com\commerce\repository\ProductRepository.class
+com\commerce\model\Product.class
+com\commerce\config\KafkaConfig.class
+com\commerce\repository\InventoryRepository.class
+com\commerce\event\InventoryEvent.class
+com\commerce\model\Inventory.class
+com\commerce\config\CacheConfig.class
+com\commerce\event\InventoryEventPublisher.class
+com\commerce\config\WebConfig$1.class
+com\commerce\config\WebConfig.class
+com\commerce\controller\InventoryController.class
+com\commerce\dto\InventoryResponse.class
+com\commerce\service\InventoryService.class
+com\commerce\dto\StockReservationRequest.class
+com\commerce\InventoryServiceApplication.class

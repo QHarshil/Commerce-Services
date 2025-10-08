@@ -1,0 +1,5 @@
+com\commerce\config\WebConfig$1.class
+com\commerce\controller\PaymentController.class
+com\commerce\config\WebConfig.class
+com\commerce\controller\HealthController.class
+com\commerce\PaymentServiceApplication.class
