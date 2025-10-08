@@ -2,7 +2,13 @@
 
 **High-Throughput Transactional Microservices Backend**
 
-Designed a high-throughput e-commerce backend handling checkout, inventory, and order processing, ensuring correctness at scale with outbox/SAGA idempotency, retries, and circuit breakers over REST and gRPC; reduced DB CPU 40% with sharding plus Redis and aiming for optimal checkout p95 less than 300 ms and p99 less than 800 ms.
+A modular e-commerce backend with services for checkout, inventory, orders, and payments. Uses Spring Boot, PostgreSQL, Redis, and Kafka for inventory events. This project emphasizes correctness, low latency, and operability on a developer laptop with Docker. A minimal frontend in html and javascript to visaluze the backedn APIs.
+
+- **Microservices over REST**: Checkout orchestrates Inventory, Orders, and Payments.
+- **Data integrity**: Idempotent operations and retries on critical paths.
+- **Caching**: Redis to reduce database load for hot reads.
+- **Optional events**: Inventory publishes Kafka events when enabled.
+- **Latency targets**: Aims for sub-300 ms p95 and sub-800 ms p99 for checkout on typical dev hardware (actual results vary by machine/load).
 
 ## 🧠 Overview
 
@@ -53,7 +59,10 @@ It's architected to handle thousands of concurrent transactions per second with 
    ./build.sh
    docker compose up --build
 
-   Allow a few minutes for services to start. Please see option 2 if docker compose fails.
+   Allow a minute or two for services to start.
+      Kafka is optional. This repo includes a single-broker Kafka (KRaft).
+      Inventory will publish events when INVENTORY_EVENTS_ENABLED=true (see docker-compose.yml).
+      If you don’t want Kafka, set it to false and remove the kafka: service from Compose.
    ```
 
 3. **Access the system**
@@ -195,6 +204,16 @@ The system demonstrates:
    cd frontend
    python3 server.py
    ```
+## 🙌 Tips
+
+Use docker compose logs -f <service> to tail logs while testing.
+- Rebuild a single service after code changes:
+```bash
+docker compose build <service>
+docker compose up -d <service>
+```
+
+-From another container, reach a service by its Compose service name (e.g., http://payment-service:8080/...). From your host, use the exposed localhost port (e.g., http://localhost:8083/...).
 
 ## 📜 License
 

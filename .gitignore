@@ -1,0 +1,106 @@
+# --- OS cruft ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# --- Root logs/output ---
+logs/
+*.log
+*.tmp
+*.swp
+
+# --- Maven / Java ---
+target/
+*/target/
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+dependency-reduced-pom.xml
+*.class
+*.hprof
+
+# --- Gradle (not used, but harmless) ---
+.gradle/
+build/
+
+# --- Spring / IDEs ---
+.springBeans
+.spring/
+.sts4-cache/
+
+# IntelliJ IDEA / JetBrains
+.idea/
+*.iml
+*.iws
+out/
+
+# VS Code
+.vscode/
+.history/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# --- Python (frontend server) ---
+__pycache__/
+*.py[cod]
+*.pyc
+.pytest_cache/
+*.coverage
+.coverage*
+htmlcov/
+.venv/
+venv/
+env/
+.Python
+.mypy_cache/
+.pyre/
+.pdm.toml
+.pdm.lock
+poetry.lock
+
+# --- Node / Web assets (if you add any tooling later) ---
+node_modules/
+npm-debug.log*
+yarn-error.log
+.pnpm-debug.log
+dist/
+build/
+
+# --- Docker / Compose ---
+# Keep docker-compose.yml; ignore local overrides & generated files
+docker-compose.override.yml
+docker-compose.local.yml
+*.env
+.env
+**/.env
+
+# Docker artifacts
+*.tar
+**/.dockerignore.local
+
+# --- Kafka / Redis / Postgres local data (if ever mounted to repo by mistake) ---
+data/
+*.rdb
+pgdata/
+postgres_data/
+redis_data/
+
+# --- Sonar / Analysis ---
+.scannerwork/
+.sonar/
+
+# --- Coverage / Reports (generic) ---
+coverage/
+reports/
+
+# --- Misc cache ---
+.cache/
+.tmp/
+
+# --- JetBrains Fleet ---
+.fleet/
