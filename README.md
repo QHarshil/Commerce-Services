@@ -10,6 +10,8 @@ A modular e-commerce backend with services for checkout, inventory, orders, and 
 - **Optional events**: Inventory publishes Kafka events when enabled.
 - **Latency targets**: Aims for sub-300 ms p95 and sub-800 ms p99 for checkout on typical dev hardware (actual results vary by machine/load).
 
+![Alt text](assets/commerce-services.png)
+
 ## 🧠 Overview
 
 Commerce Services is a distributed transactional microservices backend designed for high-traffic e-commerce platforms. Built using Java Spring Boot, PostgreSQL, Redis, and Kafka, it ensures fault tolerance, consistency, and scalability for mission-critical operations such as checkout, inventory, and order management.
