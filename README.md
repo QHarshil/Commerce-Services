@@ -60,12 +60,11 @@ It's architected to handle thousands of concurrent transactions per second with 
    Please use Git Bash for terminal commands.
    ./build.sh
    docker compose up --build
-
-   Allow a minute or two for services to start.
-      Kafka is optional. This repo includes a single-broker Kafka (KRaft).
-      Inventory will publish events when INVENTORY_EVENTS_ENABLED=true (see docker-compose.yml).
-      If you don’t want Kafka, set it to false and remove the kafka: service from Compose.
    ```
+
+   **Note:** Allow time for frontend and postgres to start. 
+   Inventory will publish events when INVENTORY_EVENTS_ENABLED=true (see docker-compose.yml).
+   Kafka is optional. If you don’t want Kafka, set it to false and remove the kafka: service from Compose.
 
 3. **Access the system**
 

@@ -1,5 +1,5 @@
 # Multi-stage build for optimized production image
-FROM openjdk:11-jdk-slim as builder
+FROM eclipse-temurin:21-jdk-alpine as builder
 
 WORKDIR /app
 
@@ -8,21 +8,21 @@ COPY pom.xml ./
 COPY src ./src
 
 # Install Maven
-RUN apt-get update && apt-get install -y maven
+RUN apk add --no-cache maven
 
 # Build the application
 RUN mvn clean package -DskipTests
 
 # Production stage
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
 # Create non-root user for security
-RUN groupadd -r commerce && useradd -r -g commerce commerce
+RUN addgroup -S commerce && adduser -S commerce -G commerce
 
 # Install curl for health checks
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache curl
 
 # Copy the built JAR
 COPY --from=builder /app/target/*.jar app.jar

@@ -1,24 +1,39 @@
 #!/bin/bash
 
+set -euo pipefail
+
 echo "🛠️  Building Commerce Services..."
 echo ""
 
-# Build all services
-services=("inventory-service" "checkout-service" "order-service" "payment-service")
+if ! command -v docker >/dev/null 2>&1; then
+    echo "❌ Docker is required to build with Java 21. Please install Docker Desktop."
+    exit 1
+fi
 
-for service in "${services[@]}"; do
-    echo "📦 Building $service..."
-    cd services/$service
-    mvn clean package -DskipTests -q
-    if [ $? -eq 0 ]; then
-        echo "✅ $service built successfully"
-    else
-        echo "❌ $service build failed"
-        exit 1
+USE_LOCAL_MAVEN=true
+if ! command -v mvn >/dev/null 2>&1 || ! command -v java >/dev/null 2>&1; then
+    USE_LOCAL_MAVEN=false
+fi
+
+if [ "${USE_LOCAL_MAVEN}" = true ]; then
+    echo "📦 Using local Maven installation"
+    mvn -B clean package -DskipTests
+else
+    echo "🐳 Local Java/Maven not detected – running containerised build (maven:3.9.9-eclipse-temurin-21)"
+
+    WORKSPACE_PATH="$PWD"
+    if command -v cygpath >/dev/null 2>&1; then
+        # Convert to Windows path for Docker Desktop when running via Git Bash
+        WORKSPACE_PATH="$(cygpath -w "$PWD")"
     fi
-    cd ../..
-done
+
+    docker run --rm \
+        -v "${WORKSPACE_PATH}:/workspace" \
+        -w /workspace \
+        maven:3.9.9-eclipse-temurin-21 \
+        mvn -B clean package -DskipTests
+fi
 
 echo ""
 echo "🎉 All services built successfully!"
-echo "🚀 Run 'docker-compose up' to start the system"
+echo "📦 Artifacts available under services/*/target"

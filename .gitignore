@@ -44,6 +44,21 @@ out/
 .project
 .classpath
 .settings/
+org.eclipse.core.runtime/
+org.eclipse.equinox.app/
+org.eclipse.equinox.launcher/
+org.eclipse.osgi/
+**/.manager/
+**/.fileTableLock
+**/.tmp*
+
+# --- Java upgrade / analysis folders ---
+java-upgrade/*/logs/
+java-upgrade/*/progress.md
+result/
+**/analysis.log
+**/shim.log
+**/settings.json
 
 # --- Python (frontend server) ---
 __pycache__/
@@ -83,7 +98,7 @@ docker-compose.local.yml
 *.tar
 **/.dockerignore.local
 
-# --- Kafka / Redis / Postgres local data (if ever mounted to repo by mistake) ---
+# --- Kafka / Redis / Postgres local data ---
 data/
 *.rdb
 pgdata/

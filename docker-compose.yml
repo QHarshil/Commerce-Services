@@ -1,16 +1,11 @@
-version: "3.8"
-
 services:
   # ---------- Database ----------
   postgres:
     image: postgres:15-alpine
-    container_name: commerce_postgres
     environment:
       POSTGRES_DB: commerce
       POSTGRES_USER: commerce
       POSTGRES_PASSWORD: commerce123
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./infrastructure/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
@@ -24,9 +19,6 @@ services:
   # ---------- Redis ----------
   redis:
     image: redis:7-alpine
-    container_name: commerce_redis
-    ports:
-      - "6379:6379"
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis_data:/data
@@ -39,7 +31,6 @@ services:
   # ---------- Kafka (broker) ----------
   kafka:
     image: apache/kafka:3.8.0
-    container_name: commerce_kafka
     ports:
       - "9092:9092"
     environment:
@@ -72,7 +63,6 @@ services:
     build:
       context: ./services/inventory-service
       dockerfile: Dockerfile
-    container_name: commerce_inventory
     depends_on:
       postgres:
         condition: service_healthy
@@ -87,8 +77,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/commerce
       SPRING_DATASOURCE_USERNAME: commerce
       SPRING_DATASOURCE_PASSWORD: commerce123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_REDIS_URL: redis://redis:6379
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       INVENTORY_EVENTS_ENABLED: "true" 
     restart: on-failure
@@ -98,7 +93,6 @@ services:
     build:
       context: ./services/order-service
       dockerfile: Dockerfile
-    container_name: commerce_order
     depends_on:
       postgres:
         condition: service_healthy
@@ -111,8 +105,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/commerce
       SPRING_DATASOURCE_USERNAME: commerce
       SPRING_DATASOURCE_PASSWORD: commerce123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_REDIS_URL: redis://redis:6379
     restart: on-failure
 
   # ---------- Payment Service (8083) ----------
@@ -120,7 +119,6 @@ services:
     build:
       context: ./services/payment-service
       dockerfile: Dockerfile
-    container_name: commerce_payment
     depends_on:
       postgres:
         condition: service_healthy
@@ -133,8 +131,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/commerce
       SPRING_DATASOURCE_USERNAME: commerce
       SPRING_DATASOURCE_PASSWORD: commerce123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_REDIS_URL: redis://redis:6379
     restart: on-failure
 
   # ---------- Checkout Service (8084) ----------
@@ -142,7 +145,6 @@ services:
     build:
       context: ./services/checkout-service
       dockerfile: Dockerfile
-    container_name: commerce_checkout
     depends_on:
       postgres:
         condition: service_healthy
@@ -162,8 +164,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/commerce
       SPRING_DATASOURCE_USERNAME: commerce
       SPRING_DATASOURCE_PASSWORD: commerce123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_REDIS_URL: redis://redis:6379
       INVENTORY_SERVICE_URL: http://inventory-service:8080
       ORDER_SERVICE_URL: http://order-service:8080
       PAYMENT_SERVICE_URL: http://payment-service:8080
@@ -173,7 +180,6 @@ services:
   frontend:
     build:
       context: ./frontend
-    container_name: commerce_frontend
     depends_on:
       - inventory-service
       - order-service
